@@ -1,9 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = [
-  { id: 1, text: 'Learn React', completed: false },
-  { id: 2, text: 'Learn Redux', completed: true },
-];
+const initialState = {
+  tasks: [
+    { id: 1, text: 'Learn React', completed: false, category: 'Work' },
+    { id: 2, text: 'Buy groceries', completed: true, category: 'Shopping' },
+  ],
+  categories: ['Work', 'Personal', 'Shopping'],
+};
+// src/features/todos/todosSlice.js
+export const selectTasksByCategory = (state, category) => {
+  if (category === 'All') {
+    return state.todos.tasks;
+  }
+  return state.todos.tasks.filter((task) => task.category === category);
+};
 
 export const todosSlice = createSlice({
   name: 'todos',
@@ -12,22 +22,28 @@ export const todosSlice = createSlice({
     addTodo: (state, action) => {
       const newTodo = {
         id: Date.now(),
-        text: action.payload,
+        text: action.payload.text,
         completed: false,
+        category: action.payload.category,
       };
-      state.push(newTodo);
+      state.tasks.push(newTodo);
     },
     toggleTodo: (state, action) => {
-      const todo = state.find((todo) => todo.id === action.payload);
+      const todo = state.tasks.find((todo) => todo.id === action.payload);
       if (todo) {
         todo.completed = !todo.completed;
       }
     },
     deleteTodo: (state, action) => {
-      return state.filter((todo) => todo.id !== action.payload);
+      state.todo= state.tasks.filter((todo) => todo.id !== action.payload);
     },
+    addCategory: (state, action) => {
+      if (!state.categories.includes(action.payload)) {
+        state.categories.push(action.payload);
+      }
+    }
   },
 });
 
-export const { addTodo, toggleTodo, deleteTodo } = todosSlice.actions;
+export const { addTodo, toggleTodo, deleteTodo,addCategory } = todosSlice.actions;
 export default todosSlice.reducer;
